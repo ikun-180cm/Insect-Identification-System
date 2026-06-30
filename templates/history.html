@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}历史记录{% endblock %}
+
+{% block content %}
+<style>
+    .history-container {
+        max-width: 900px;
+        margin: 60px auto;
+        padding: 30px;
+        background: rgba(18, 22, 38, 0.88);
+        border: 1px solid rgba(136, 132, 255, 0.5);
+        border-radius: 16px;
+        box-shadow: 0 0 35px rgba(120, 110, 255, 0.35);
+        color: #e2e2ff;
+    }
+    .history-title {
+        font-size: 28px;
+        text-align: center;
+        background: linear-gradient(90deg, #ff4191, #b166ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+    }
+    .search-box {
+        width: 100%;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+    }
+    .search-input {
+        flex: 1;
+        padding: 12px 15px;
+        background: rgba(26, 30, 52, 0.8);
+        border: 1px solid rgba(136, 132, 255, 0.4);
+        border-radius: 8px;
+        color: #e2e2ff;
+        font-size: 15px;
+        outline: none;
+    }
+    .search-input:focus {
+        border-color: #b166ff;
+        box-shadow: 0 0 10px rgba(177, 102, 255, 0.3);
+    }
+    .search-btn {
+        padding: 12px 18px;
+        background: linear-gradient(90deg, #00c6ff, #0072ff);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .btn-group {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .back-btn, .select-all-btn, .delete-all-btn {
+        padding: 10px 20px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    .back-btn {
+        background: rgba(102, 110, 145, 0.8);
+        color: #fff;
+    }
+    .select-all-btn {
+        background: linear-gradient(90deg, #00c6ff, #0072ff);
+        color: #fff;
+    }
+    .delete-all-btn {
+        background: linear-gradient(90deg, #ff4191, #ff6b6b);
+        color: #fff;
+        display: none;
+    }
+    .record {
+        padding: 20px;
+        background: rgba(26, 30, 52, 0.6);
+        border-radius: 12px;
+        margin-bottom: 15px;
+        border-left: 3px solid #b166ff;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .record-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: #b166ff;
+        margin-top: 5px;
+    }
+    .record-content {
+        flex: 1;
+    }
+    .record span {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 15px;
+    }
+    /* 新增检测结果样式 */
+    .detect-result {
+        color: #00c6ff;
+        font-weight: bold;
+    }
+    .preview-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+    .preview-box {
+        flex: 1;
+        min-width: 200px;
+        text-align: center;
+    }
+    .preview-box p {
+        font-size: 13px;
+        color: #a0a0ff;
+        margin-bottom: 6px;
+    }
+    .preview-box img, .preview-box video {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 8px;
+    }
+    .delete-btn {
+        padding: 8px 16px;
+        background: linear-gradient(90deg, #ff4191, #ff6b6b);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 12px;
+    }
+    .empty {
+        text-align: center;
+        padding: 40px 0;
+        color: #a0a0ff;
+        font-size: 18px;
+    }
+
+    /* 分页样式 */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 30px;
+    }
+    .page-btn {
+        padding: 8px 16px;
+        background: rgba(26, 30, 52, 0.8);
+        color: #e2e2ff;
+        border: 1px solid rgba(136, 132, 255, 0.4);
+        border-radius: 6px;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+    .page-btn:hover {
+        background: #b166ff;
+        color: #fff;
+    }
+    .page-btn.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+    }
+    .page-info {
+        color: #a0a0ff;
+        font-size: 14px;
+    }
+</style>
+
+<div class="history-container">
+    <h2 class="history-title">📜 历史记录</h2>
+
+    <!-- 搜索框 -->
+    <div class="search-box">
+        <input type="text" id="searchInput" class="search-input" placeholder="输入文件名搜索..." oninput="searchRecords()">
+        <button class="search-btn" onclick="searchRecords()">🔍 搜索</button>
+    </div>
+
+    <div class="btn-group">
+        <a href="/" class="back-btn">← 返回上传页</a>
+        <button class="select-all-btn" id="selectAllBtn">📋 全选</button>
+        <button class="delete-all-btn" id="deleteAllBtn" onclick="deleteAllSelected()">🗑️ 全部删除</button>
+    </div>
+
+    <div id="recordList">
+        {% if records %}
+            {% for r in records %}
+            <div class="record" data-filename="{{ r[2] }}">
+                <input type="checkbox" class="record-checkbox" value="{{ r[0] }}">
+                <div class="record-content">
+                    <span>👤 用户名：{{ r[1] }}</span>
+                    <span>🕒 上传时间：{{ r[3] }}</span>
+                    <span>📁 文件名：{{ r[2] }}</span>
+                    <!-- 新增：展示检测结果 -->
+                    <span class="detect-result">🔍 检测结果：{{ r[4] }}</span>
+
+                    <div class="preview-group">
+                        <div class="preview-box">
+                            <p>🔹 原文件</p>
+                            {% set ext = r[2].split('.')[-1].lower() %}
+                            {% if ext in ['jpg','jpeg','png'] %}
+                                <img src="{{ url_for('static', filename='uploads/'+r[2]) }}">
+                            {% elif ext in ['mp4','mov','avi','mkv','flv','webm'] %}
+                                <video src="{{ url_for('static', filename='uploads/'+r[2]) }}" controls></video>
+                            {% endif %}
+                        </div>
+                        <div class="preview-box">
+                            <p>🔹 检测结果（带方框）</p>
+                            {% set res_fn = r[5] %}
+                            {% if res_fn %}
+                                <img src="{{ url_for('static', filename='results/'+res_fn) }}">
+                            {% else %}
+                                <p>无检测结果</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <form action="/delete" method="post" onsubmit="return confirmDelete()" style="display:inline;">
+                        <input type="hidden" name="id" value="{{ r[0] }}">
+                        <button class="delete-btn">删除</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">暂无记录</div>
+        {% endif %}
+    </div>
+
+    <!-- 分页导航 -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        <!-- 上一页 -->
+        <a href="{{ url_for('history', page=page-1) }}"
+           class="page-btn {{ 'disabled' if page == 1 else '' }}">上一页</a>
+
+        <!-- 页码信息 -->
+        <span class="page-info">第 {{ page }} / {{ total_pages }} 页</span>
+
+        <!-- 下一页 -->
+        <a href="{{ url_for('history', page=page+1) }}"
+           class="page-btn {{ 'disabled' if page == total_pages else '' }}">下一页</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function confirmDelete() {
+        return confirm("确定要删除这条记录吗？");
+    }
+
+    // 搜索功能
+    function searchRecords() {
+        let keyword = document.getElementById('searchInput').value.toLowerCase();
+        let records = document.querySelectorAll('.record');
+
+        records.forEach(item => {
+            let filename = item.getAttribute('data-filename').toLowerCase();
+            item.style.display = filename.includes(keyword) ? '' : 'none';
+        });
+    }
+
+    // 全选/批量删除
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const deleteAllBtn = document.getElementById('deleteAllBtn');
+    const checkboxes = document.querySelectorAll('.record-checkbox');
+
+    selectAllBtn.addEventListener('click', () => {
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => cb.checked = !allChecked);
+        selectAllBtn.innerText = allChecked ? "📋 全选" : "📋 取消全选";
+        updateDeleteBtn();
+    });
+
+    function updateDeleteBtn() {
+        const hasChecked = Array.from(checkboxes).some(cb => cb.checked);
+        deleteAllBtn.style.display = hasChecked ? "block" : "none";
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateDeleteBtn);
+    });
+
+    async function deleteAllSelected() {
+        const selected = Array.from(checkboxes).filter(cb => cb.checked);
+        if (selected.length === 0) {
+            alert("请先选择要删除的记录！");
+            return;
+        }
+        if (!confirm("确定删除选中的所有记录？")) return;
+
+        for (let cb of selected) {
+            let formData = new FormData();
+            formData.append('id', cb.value);
+            await fetch('/delete', { method: 'POST', body: formData });
+        }
+        window.location.reload();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}车道检测 - 检测结果{% endblock %}
+
+{% block content %}
+<style>
+    .result-container {
+        max-width: 900px;
+        margin: 60px auto;
+        padding: 40px;
+        background: rgba(18, 22, 38, 0.9);
+        border: 1px solid rgba(136, 132, 255, 0.6);
+        border-radius: 16px;
+        box-shadow: 0 0 40px rgba(120, 110, 255, 0.4);
+        color: #e2e2ff;
+        text-align: center;
+    }
+
+    .result-title {
+        font-size: 34px;
+        font-weight: bold;
+        background: linear-gradient(90deg, #ff4191, #b166ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+    }
+
+    .result-subtitle {
+        font-size: 16px;
+        color: #a0a0ff;
+        margin-bottom: 35px;
+    }
+
+    /* 新增检测结果样式 */
+    .detect-result {
+        font-size: 20px;
+        color: #fff;
+        background: linear-gradient(90deg, #00c6ff, #0072ff);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: bold;
+        box-shadow: 0 0 15px rgba(0, 114, 255, 0.4);
+    }
+
+    .preview-box {
+        width: 100%;
+        background: rgba(26, 30, 52, 0.7);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(170, 140, 255, 0.4);
+        box-shadow: 0 0 20px rgba(170, 140, 255, 0.2);
+    }
+
+    .preview-box img,
+    .preview-box video {
+        max-width: 100%;
+        max-height: 550px;
+        border-radius: 10px;
+        object-fit: contain;
+    }
+
+    .filename {
+        font-size: 15px;
+        color: #c0c0ff;
+        margin-bottom: 20px;
+        word-break: break-all;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .btn {
+        padding: 13px 28px;
+        border-radius: 8px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+    .btn-home {
+        background: linear-gradient(90deg, #b166ff, #8a66ff);
+        color: #fff;
+    }
+
+    .btn-history {
+        background: linear-gradient(90deg, #ff4191, #ff6ba2);
+        color: #fff;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(255, 65, 145, 0.4);
+    }
+</style>
+
+<div class="result-container">
+    <h2 class="result-title">✅ 检测完成</h2>
+    <p class="result-subtitle">文件已成功上传并完成检测</p>
+
+    <!-- 新增：展示检测结果 -->
+    <div class="detect-result">🔍 检测结果：{{ detect_result }}</div>
+
+    <div class="filename">📁 文件名：{{ filename }}</div>
+
+    <div class="preview-box">
+        {% set ext = filename.split('.')[-1].lower() %}
+        {% if ext in ['jpg','jpeg','png'] %}
+            <!-- 原图 -->
+            <img src="{{ url_for('static', filename='uploads/'+filename) }}" alt="原图" style="max-width: 48%; margin-right: 2%;">
+            <!-- 结果图 -->
+            <img src="{{ url_for('static', filename='results/'+filename) }}" alt="检测结果" style="max-width: 48%;">
+        {% elif ext in ['mp4','mov','avi','mkv','flv','webm'] %}
+            <video src="{{ url_for('static', filename='uploads/'+filename) }}" controls muted></video>
+        {% else %}
+            <p>不支持预览该文件</p>
+        {% endif %}
+    </div>
+
+    <div class="btn-group">
+        <a href="/" class="btn btn-home">🏠 返回上传页</a>
+        <a href="/history" class="btn btn-history">📜 查看历史记录</a>
+    </div>
+</div>
+{% endblock %}

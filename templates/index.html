@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .upload-container {
+        width: 520px;
+        margin: 80px auto;
+        padding: 45px 35px;
+        background: rgba(18, 22, 38, 0.88);
+        border: 1px solid rgba(136, 132, 255, 0.5);
+        border-radius: 14px;
+        box-shadow: 0 0 35px rgba(120, 110, 255, 0.35);
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+    .upload-title {
+        font-size: 32px;
+        font-weight: bold;
+        background: linear-gradient(90deg, #ff4191, #b166ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+    }
+    .file-input-box {
+        margin: 25px 0;
+        text-align: left;
+    }
+    .file-input-box label {
+        color: #e2e2ff;
+        font-size: 15px;
+        display: block;
+        margin-bottom: 8px;
+    }
+    .file-input {
+        width: 100%;
+        padding: 13px;
+        background: rgba(26, 30, 52, 0.75);
+        border: 1px solid rgba(170, 140, 255);
+        border-radius: 7px;
+        color: #fff;
+        font-size: 15px;
+    }
+    .upload-btn {
+        width: 100%;
+        padding: 13px;
+        background: linear-gradient(90deg, #ff4191, #b166ff);
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .upload-btn:hover {
+        box-shadow: 0 0 16px rgba(255, 65, 145, 0.5);
+    }
+
+    .history-btn {
+        width: 100%;
+        padding: 13px;
+        margin-top: 12px;
+        background: linear-gradient(90deg, #00c6ff, #0072ff);
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .history-btn:hover {
+        box-shadow: 0 0 16px rgba(0, 114, 255, 0.5);
+    }
+
+    .logout-btn {
+        width: 100%;
+        padding: 13px;
+        margin-top: 12px;
+        background: linear-gradient(90deg, #6b7382, #5c6370);
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .logout-btn:hover {
+        box-shadow: 0 0 16px rgba(107, 115, 130, 0.4);
+    }
+
+    .tip-text {
+        color: #a0a0ff;
+        font-size: 13px;
+        margin-top: 12px;
+        text-align: left;
+        line-height: 1.5;
+    }
+
+    /* ====================== 超大号呼吸灯欢迎词 ====================== */
+    .welcome-box {
+        text-align: center;
+        margin: 40px 0 30px 0;
+        font-size: 38px;    /* 超大字号 */
+        font-weight: bold;
+        background: linear-gradient(90deg, #ff99cc, #cc99ff, #66ccff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: breath 2.8s ease-in-out infinite alternate;
+        text-shadow: 0 0 25px rgba(204, 153, 255, 0.7);
+    }
+
+    @keyframes breath {
+        0% { opacity: 0.6; transform: scale(1); }
+        100% { opacity: 1; transform: scale(1.08); }
+    }
+</style>
+
+<!-- 呼吸灯欢迎语（随机多条） -->
+<div class="welcome-box" id="welcomeText"></div>
+
+<div class="upload-container">
+    <h2 class="upload-title">文件上传</h2>
+
+    <form id="uploadForm" enctype="multipart/form-data" method="post" action="/upload">
+        <div class="file-input-box">
+            <label>选择要上传的文件</label>
+            <input class="file-input" type="file" id="fileInput" name="file" required
+                accept=".jpg,.jpeg,.png,.mp4,.mov,.avi,.mkv,.flv,.webm">
+            <div class="tip-text">
+                支持格式：<br>
+                ✔ 图片：JPG / JPEG / PNG<br>
+<!--                ✔ 视频：MP4 / MOV / AVI / MKV / FLV / WEBM-->
+            </div>
+        </div>
+        <button type="submit" class="upload-btn">📤 开始上传</button>
+    </form>
+
+    <button class="history-btn" onclick="location.href='/history'">📜 查看历史记录</button>
+    <button class="logout-btn" onclick="location.href='/logout'">🚪 退出登录</button>
+</div>
+
+<script>
+    const user = "{{ session.username }}";
+
+    // 多条欢迎语随机
+    const welcomeTexts = [
+        `欢迎你，${user}大人 ✨`,
+        `${user}，欢迎回来 🌟`,
+        `你好，${user}大人 💫`,
+        `欢迎使用昆虫检测系统，${user} 🦋`
+    ];
+
+    const randomText = welcomeTexts[Math.floor(Math.random() * welcomeTexts.length)];
+    document.getElementById("welcomeText").innerText = randomText;
+</script>
+{% endblock %}

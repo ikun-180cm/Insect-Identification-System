@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}登录 - 苍穹车道检测系统{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div class="glass p-8 sm:p-10 md:p-12 rounded-3xl shadow-2xl w-full max-w-md">
+        <h2 class="text-4xl sm:text-5xl font-bold text-center mb-10 glow-text tracking-wide">
+            🌌 星河登录
+        </h2>
+        <form method="post" class="space-y-6">
+            <div>
+                <input type="text" name="username" placeholder="用户名 / Username"
+                       class="w-full px-5 py-4 bg-white/10 border border-white/30 rounded-2xl focus:outline-none focus:border-purple-400/80 focus:ring-2 focus:ring-purple-500/40 text-lg text-white placeholder:text-white/85 transition duration-200">
+            </div>
+            <div>
+                <input type="password" name="password" placeholder="密码 / Password"
+                       class="w-full px-5 py-4 bg-white/10 border border-white/30 rounded-2xl focus:outline-none focus:border-purple-400/80 focus:ring-2 focus:ring-purple-500/40 text-lg text-white placeholder:text-white/85 transition duration-200">
+            </div>
+            <button type="submit"
+                    class="w-full py-4 btn-gradient text-xl font-semibold rounded-2xl transition-all hover:brightness-110 active:scale-95 shadow-xl glow-text">
+                进入星河 ✨
+            </button>
+        </form>
+
+        <div class="text-center mt-8 text-lg">
+            <a href="/register" class="text-purple-300 hover:text-purple-100 underline transition">
+                没有账号？前往注册 →
+            </a>
+        </div>
+    </div>
+</div>
+
+<a href="/logout" class="fixed bottom-6 right-6 text-white/70 hover:text-white text-base sm:text-lg transition">
+    退出 ↩︎
+</a>
+{% endblock %}
